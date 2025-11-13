@@ -10,23 +10,19 @@
         <div class="flex items-center gap-3">
           <img
             v-if="bookingConfig?.business.logoUrl"
-            :src="bookingConfig?.business.logoUrl"
-            :alt="bookingConfig?.business.name"
+            :src="bookingConfig.business.logoUrl"
+            :alt="bookingConfig.business.name"
             class="h-7 w-auto object-contain"
           />
-          <span class="text-sm font-semibold text-slate-700">{{
-            bookingConfig?.business.name || "Business"
-          }}</span>
+          <span class="text-sm font-semibold text-slate-700">
+            {{ bookingConfig?.business.name || "Business" }}
+          </span>
         </div>
         <nav class="hidden md:flex items-center gap-6 text-sm text-slate-500">
           <a class="hover:text-slate-700" href="#services">Services</a>
           <a class="hover:text-slate-700" href="#time">Time</a>
           <a class="hover:text-slate-700" href="#details">Details</a>
-          <button
-            class="px-3 py-1.5 rounded-lg border text-slate-600 hover:bg-slate-50"
-          >
-            Contact
-          </button>
+          <a class="hover:text-slate-700" href="#contact">Contact</a>
         </nav>
       </div>
     </header>
@@ -71,7 +67,7 @@
       </div>
     </section>
 
-    <!-- Card -->
+    <!-- Main content -->
     <main class="mx-auto max-w-6xl px-4 sm:px-6 py-8">
       <div class="grid lg:grid-cols-3 gap-8">
         <!-- Left: selectors -->
@@ -85,14 +81,12 @@
               <h2 class="text-lg font-semibold text-slate-800">
                 Select Service
               </h2>
-              <span v-if="selectedServiceId" class="text-xs text-slate-500"
-                >Duration:
-                {{
-                  services.find((s) => s.id === selectedServiceId)
-                    ?.durationMin || 0
-                }}
-                min</span
+              <span
+                v-if="selectedServiceDuration"
+                class="text-xs text-slate-500"
               >
+                Duration: {{ selectedServiceDuration }} min
+              </span>
             </div>
 
             <div
@@ -216,9 +210,9 @@
 
             <!-- Date picker above -->
             <div class="space-y-2 mb-6">
-              <label class="text-xs font-medium text-slate-600"
-                >Date ({{ timeZone }})</label
-              >
+              <label class="text-xs font-medium text-slate-600">
+                Date ({{ timeZone }})
+              </label>
               <input
                 class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-slate-200 text-black"
                 type="date"
@@ -288,9 +282,9 @@
             </h2>
             <form class="grid md:grid-cols-2 gap-4" @submit.prevent>
               <div class="space-y-1">
-                <label class="text-xs text-slate-600"
-                  >Full name <span class="text-rose-500">*</span></label
-                >
+                <label class="text-xs text-slate-600">
+                  Full name <span class="text-rose-500">*</span>
+                </label>
                 <input
                   v-model="customerName"
                   class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-slate-200"
@@ -316,6 +310,185 @@
               </div>
             </form>
           </section>
+
+          <!-- Contact & Location -->
+          <section
+            id="contact"
+            class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 text-black"
+          >
+            <h2 class="text-lg font-semibold text-slate-800 mb-4">
+              Contact & location
+            </h2>
+
+            <div
+              v-if="businessContact || businessAddress"
+              class="grid md:grid-cols-2 gap-6 text-sm"
+            >
+              <!-- Contact info -->
+              <div class="space-y-3">
+                <h3
+                  class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
+                >
+                  Contact
+                </h3>
+
+                <div v-if="businessContact?.email">
+                  <p class="text-[11px] text-slate-500">Email</p>
+                  <a
+                    class="text-sm font-medium text-slate-800 hover:underline break-all"
+                    :href="`mailto:${businessContact.email}`"
+                  >
+                    {{ businessContact.email }}
+                  </a>
+                </div>
+
+                <div v-if="businessContact?.phone">
+                  <p class="text-[11px] text-slate-500">Phone</p>
+                  <p class="text-sm font-medium text-slate-800">
+                    {{ businessContact.phone }}
+                  </p>
+                </div>
+
+                <div v-if="businessContact?.website">
+                  <p class="text-[11px] text-slate-500">Website</p>
+                  <a
+                    class="text-sm font-medium text-slate-800 hover:underline break-all"
+                    :href="businessContact.website"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {{ businessContact.website }}
+                  </a>
+                </div>
+
+                <!-- Social icons -->
+                <div
+                  v-if="
+                    businessContact?.facebookUrl ||
+                    businessContact?.instagramUrl ||
+                    businessContact?.tiktokUrl
+                  "
+                  class="space-y-1"
+                >
+                  <p class="text-[11px] text-slate-500">Social</p>
+                  <div class="flex flex-wrap gap-2">
+                    <!-- Facebook -->
+                    <a
+                      v-if="businessContact?.facebookUrl"
+                      :href="businessContact.facebookUrl"
+                      target="_blank"
+                      rel="noreferrer"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                      aria-label="Facebook"
+                    >
+                      <span class="sr-only">Facebook</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        class="h-4 w-4"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="M13.5 9H15V6.75A8.8 8.8 0 0 0 13.28 6C12.17 6 11.36 6.37 10.8 6.93 10.24 7.5 10 8.24 10 9.35V11H8v3h2v5h3v-5h2.1l.9-3H13v-1.5c0-.5.12-.84.31-1.04.19-.19.46-.31.86-.31Z"
+                        />
+                      </svg>
+                    </a>
+
+                    <!-- Instagram -->
+                    <a
+                      v-if="businessContact?.instagramUrl"
+                      :href="businessContact.instagramUrl"
+                      target="_blank"
+                      rel="noreferrer"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                      aria-label="Instagram"
+                    >
+                      <span class="sr-only">Instagram</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        class="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                      >
+                        <rect
+                          x="4"
+                          y="4"
+                          width="16"
+                          height="16"
+                          rx="4"
+                          ry="4"
+                        />
+                        <circle cx="12" cy="12" r="3.5" />
+                        <circle cx="17" cy="7" r="1" fill="currentColor" />
+                      </svg>
+                    </a>
+
+                    <!-- TikTok -->
+                    <a
+                      v-if="businessContact?.tiktokUrl"
+                      :href="businessContact.tiktokUrl"
+                      target="_blank"
+                      rel="noreferrer"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                      aria-label="TikTok"
+                    >
+                      <span class="sr-only">TikTok</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        class="h-4 w-4"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="M16.5 7.25c.6.67 1.32 1.22 2.13 1.62.5.25 1.03.43 1.57.54v2.52c-.98-.08-1.94-.34-2.82-.78a7.5 7.5 0 0 1-1.38-.87v5.57c0 3.13-2.54 5.65-5.67 5.65C7.2 21.5 4.7 19 4.7 15.88 4.7 12.77 7.2 10.25 10.33 10.25c.27 0 .54.02.8.06v2.73a2.72 2.72 0 0 0-.8-.12 2.91 2.91 0 0 0-2.9 2.96 2.9 2.9 0 0 0 2.9 2.92c1.6 0 2.88-1.28 2.88-2.92V2.5h3.29c.06.88.34 1.73.82 2.48.3.47.69.9 1.15 1.27Z"
+                        />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+
+                <div
+                  v-if="businessContact?.messenger || businessContact?.viber"
+                  class="space-y-1"
+                >
+                  <p class="text-[11px] text-slate-500">Chat apps</p>
+                  <div class="space-y-1">
+                    <p v-if="businessContact?.messenger" class="text-xs">
+                      Messenger:
+                      <span class="font-medium text-slate-800">
+                        {{ businessContact.messenger }}
+                      </span>
+                    </p>
+                    <p v-if="businessContact?.viber" class="text-xs">
+                      Viber:
+                      <span class="font-medium text-slate-800">
+                        {{ businessContact.viber }}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Address -->
+              <div v-if="businessAddress" class="space-y-3">
+                <h3
+                  class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
+                >
+                  Location
+                </h3>
+                <p class="text-sm text-slate-800 whitespace-pre-line">
+                  {{ formattedAddress }}
+                </p>
+              </div>
+            </div>
+
+            <p v-else class="text-sm text-slate-500">
+              This business hasn’t added contact details yet. You can still book
+              an appointment using the form above.
+            </p>
+          </section>
         </div>
 
         <!-- Right: summary -->
@@ -327,41 +500,37 @@
             <div class="mt-4 space-y-3 text-sm">
               <div class="flex justify-between">
                 <span class="text-slate-500">Service</span>
-                <span class="font-medium">{{
-                  selectedService?.name || "—"
-                }}</span>
+                <span class="font-medium">
+                  {{ selectedService?.name || "—" }}
+                </span>
               </div>
               <div class="flex justify-between">
                 <span class="text-slate-500">Staff</span>
-                <span class="font-medium">{{
-                  staffForSelectedService.find((s) => s.id === selectedStaffId)
-                    ?.name || "—"
-                }}</span>
+                <span class="font-medium">
+                  {{ selectedStaff?.name || "—" }}
+                </span>
               </div>
               <div class="flex justify-between">
                 <span class="text-slate-500">When</span>
-                <span class="font-medium">{{
-                  selectedSlot
-                    ? formatSlotLabel(
-                        selectedSlot.startUtc,
-                        selectedSlot.endUtc
-                      )
-                    : "—"
-                }}</span>
+                <span class="font-medium">
+                  {{ summaryWhen }}
+                </span>
               </div>
               <div class="flex justify-between">
                 <span class="text-slate-500">Duration</span>
-                <span class="font-medium"
-                  >{{ selectedService?.durationMin || 0 }} min</span
-                >
+                <span class="font-medium">
+                  {{ selectedServiceDuration || 0 }} min
+                </span>
               </div>
               <div class="flex justify-between">
                 <span class="text-slate-500">Price</span>
-                <span class="font-medium">{{
-                  selectedService?.priceCents
-                    ? formatPrice(selectedService.priceCents)
-                    : "Free"
-                }}</span>
+                <span class="font-medium">
+                  {{
+                    selectedService?.priceCents
+                      ? formatPrice(selectedService.priceCents)
+                      : "Free"
+                  }}
+                </span>
               </div>
             </div>
 
@@ -373,18 +542,20 @@
             >
               {{ submitting ? "Booking…" : "Confirm booking" }}
             </button>
+
             <p v-if="errorMessage" class="mt-3 text-xs text-rose-600">
               {{ errorMessage }}
             </p>
+
             <div
               v-if="successData"
               class="mt-3 text-xs text-emerald-600 space-y-1"
             >
               <p>
                 Booked! Reference:
-                <span class="font-mono">{{
-                  successData?.id || successData?.booking?.id || "OK"
-                }}</span>
+                <span class="font-mono">
+                  {{ successData?.id || successData?.booking?.id || "OK" }}
+                </span>
               </p>
               <button
                 class="text-emerald-700/80 underline"
@@ -428,6 +599,17 @@ const bookingConfig = ref<null | {
       country?: string;
     } | null;
     tagline?: string | null;
+    contact?: {
+      email?: string;
+      phone?: string;
+      website?: string;
+      facebookUrl?: string;
+      instagramUrl?: string;
+      tiktokUrl?: string;
+      messenger?: string;
+      viber?: string;
+    } | null;
+    contactJson?: any;
   };
   services: Array<{
     id: string;
@@ -464,6 +646,31 @@ const timeZone = computed(
   () => bookingConfig.value?.business.timezone || "Asia/Manila"
 );
 
+// ---------- Contact & address helpers ----------
+const businessContact = computed(() => {
+  const biz: any = bookingConfig.value?.business;
+  if (!biz) return null;
+  return biz.contact || biz.contactJson || null;
+});
+
+const businessAddress = computed(
+  () => bookingConfig.value?.business.address || null
+);
+
+const formattedAddress = computed(() => {
+  const a = businessAddress.value;
+  if (!a) return "";
+  const parts = [
+    a.line1,
+    a.line2,
+    [a.city, a.province].filter(Boolean).join(", ") || null,
+    a.postalCode,
+    a.country,
+  ].filter((p) => !!p && String(p).trim().length > 0);
+  return parts.join("\n");
+});
+
+// ---------- Display helpers ----------
 const formatPrice = (cents?: number | null) => {
   if (cents == null) return "";
   return `₱${(cents / 100).toLocaleString("en-PH", {
@@ -487,7 +694,7 @@ const canSearchSlots = computed(
     !!selectedServiceId.value && !!selectedStaffId.value && !!dateLocal.value
 );
 
-// helpers
+// date helpers
 function ymdInTz(d: Date, tz: any) {
   const fmt = new Intl.DateTimeFormat("en-CA", {
     timeZone: tz,
@@ -509,6 +716,7 @@ function filterPastSlotsForToday(
   return all.filter((s) => new Date(s.endUtc) > nowWithLead);
 }
 
+// ---------- Brand color ----------
 const brandColor = computed(
   () => bookingConfig.value?.business.primaryColor || "#ff784b"
 );
@@ -523,9 +731,9 @@ function hexToRgba(hex: string, alpha = 1) {
       : v,
     16
   );
-  const r = (bigint >> 16) & 255,
-    g = (bigint >> 8) & 255,
-    b = bigint & 255;
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 function setBrandVars(c: string) {
@@ -540,6 +748,7 @@ if (import.meta.client) {
   watch(brandColor, (c) => setBrandVars(c), { immediate: true });
 }
 
+// ---------- Head tags ----------
 watch(
   () => bookingConfig.value?.business.logoUrl,
   (logo) => {
@@ -553,30 +762,38 @@ watch(
   },
   { immediate: true }
 );
+
 watch(
   () => bookingConfig.value?.business,
   (biz) => {
     if (!biz) return;
-    useHead({
-      meta: [
-        { property: "og:title", content: biz.name },
-        {
-          property: "og:description",
-          content: biz.tagline || "Book in one tap.",
-        },
-        biz.logoUrl ? { property: "og:image", content: biz.logoUrl } : {},
-      ].filter(Boolean) as any,
-    });
+    const meta: any[] = [
+      { property: "og:title", content: biz.name },
+      {
+        property: "og:description",
+        content: biz.tagline || "Book in one tap.",
+      },
+    ];
+    if (biz.logoUrl) {
+      meta.push({ property: "og:image", content: biz.logoUrl });
+    }
+    useHead({ meta });
   },
   { immediate: true }
 );
 
-// selections
+// ---------- Selections ----------
 const services = computed(() => bookingConfig.value?.services || []);
 const staff = computed(() => bookingConfig.value?.staff || []);
-const selectedService = computed(() =>
-  services.value.find((s) => s.id === selectedServiceId.value)
+
+const selectedService = computed(
+  () => services.value.find((s) => s.id === selectedServiceId.value) || null
 );
+
+const selectedServiceDuration = computed(
+  () => selectedService.value?.durationMin || 0
+);
+
 const staffForSelectedService = computed(() => {
   if (!selectedServiceId.value) return staff.value;
   return staff.value.filter(
@@ -585,24 +802,21 @@ const staffForSelectedService = computed(() => {
   );
 });
 
-function selectService(id: string) {
-  selectedServiceId.value = id;
-  // choose first staff that can do this service if current staff doesn't match
-  if (
-    !staffForSelectedService.value.find((s) => s.id === selectedStaffId.value)
-  ) {
-    selectedStaffId.value = staffForSelectedService.value?.[0]?.id || null;
-  }
-  selectedSlot.value = null;
-  fetchSlots();
-}
-function selectStaff(id: string) {
-  selectedStaffId.value = id;
-  selectedSlot.value = null;
-  fetchSlots();
-}
+const selectedStaff = computed(
+  () =>
+    staffForSelectedService.value.find((s) => s.id === selectedStaffId.value) ||
+    null
+);
 
-// ------------ API calls
+const summaryWhen = computed(() => {
+  if (!selectedSlot.value) return "—";
+  return formatSlotLabel(
+    selectedSlot.value.startUtc,
+    selectedSlot.value.endUtc
+  );
+});
+
+// ---------- API calls ----------
 async function fetchConfig() {
   try {
     const res: any = await $fetch(
@@ -614,7 +828,14 @@ async function fetchConfig() {
       return;
     }
 
-    bookingConfig.value = data;
+    const b: any = data.business || {};
+    if (!b.contact && b.contactJson) {
+      b.contact = b.contactJson;
+    }
+    bookingConfig.value = {
+      ...data,
+      business: b,
+    };
 
     const cfg = bookingConfig.value;
     if (!cfg) return;
@@ -641,6 +862,24 @@ async function fetchConfig() {
   }
 }
 
+function selectService(id: string) {
+  selectedServiceId.value = id;
+  // choose first staff that can do this service if current staff doesn't match
+  if (
+    !staffForSelectedService.value.find((s) => s.id === selectedStaffId.value)
+  ) {
+    selectedStaffId.value = staffForSelectedService.value?.[0]?.id || null;
+  }
+  selectedSlot.value = null;
+  fetchSlots();
+}
+
+function selectStaff(id: string) {
+  selectedStaffId.value = id;
+  selectedSlot.value = null;
+  fetchSlots();
+}
+
 async function fetchSlots() {
   if (!canSearchSlots.value) return;
   loadingSlots.value = true;
@@ -661,8 +900,9 @@ async function fetchSlots() {
     const payload = res.data || res;
     const tz = timeZone.value || "Asia/Manila";
     let list: Array<{ startUtc: string; endUtc: string }> = payload.slots || [];
-    if (isSameYmdInTz(dateLocal.value, tz))
+    if (isSameYmdInTz(dateLocal.value, tz)) {
       list = filterPastSlotsForToday(list, 10);
+    }
     slots.value = list;
   } catch (e: any) {
     console.error(e);
@@ -729,9 +969,20 @@ function resetFormForNewBooking() {
 onMounted(fetchConfig);
 </script>
 
-<!-- Tailwind handles most styling; only a couple of utilities here if needed. -->
-<style scoped>
+<!-- Default brand color (overridden by JS via CSS variables) -->
+<style>
 :root {
   --brand: #ff784b;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>
